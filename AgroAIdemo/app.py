@@ -8,6 +8,9 @@ import os
 import json
 import glob
 import hashlib
+import subprocess
+import sys
+from pathlib import Path
 from urllib.parse import quote_plus
 
 from src.predict import predict_future
@@ -19,15 +22,58 @@ BRAND_LIGHT = "#BEF264"
 WARN = "#F59E0B"
 DANGER = "#EF4444"
 REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:5173")
+BASE_DIR = Path(__file__).resolve().parent
+MODELS_DIR = BASE_DIR / "models"
+METADATA_PATH = MODELS_DIR / "metadata.json"
+AUTO_TRAIN_IF_MISSING = os.getenv("AUTO_TRAIN_IF_MISSING", "1") == "1"
 
 # --- PRO-LEVEL UI CSS INJECTION ---
 def load_css():
-    css_path = "assets/style.css"
+    css_path = BASE_DIR / "assets" / "style.css"
     if os.path.exists(css_path):
         with open(css_path) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 load_css()
 # -----------------------------------
+
+
+def ensure_models_available():
+    has_metadata = METADATA_PATH.exists()
+    has_model_files = any(MODELS_DIR.glob("*.pkl"))
+    if has_metadata or has_model_files:
+        return
+
+    if not AUTO_TRAIN_IF_MISSING:
+        st.error("❌ No model metadata or model files found on server.")
+        st.info("Set AUTO_TRAIN_IF_MISSING=1 or generate models in AgroAIdemo/models/ before deployment.")
+        st.stop()
+
+    if st.session_state.get("auto_train_failed", False):
+        st.error("❌ Model auto-training failed on a previous attempt.")
+        if st.button("Retry Model Training"):
+            st.session_state["auto_train_failed"] = False
+            st.rerun()
+        st.stop()
+
+    MODELS_DIR.mkdir(parents=True, exist_ok=True)
+    with st.spinner("No models found. Running one-time training on server (this can take several minutes)..."):
+        result = subprocess.run(
+            [sys.executable, str(BASE_DIR / "offline_train.py")],
+            cwd=str(BASE_DIR),
+            capture_output=True,
+            text=True,
+        )
+
+    if result.returncode != 0:
+        st.session_state["auto_train_failed"] = True
+        st.error("❌ Auto-training failed. Check logs below.")
+        with st.expander("Training logs"):
+            logs = (result.stdout or "") + "\n" + (result.stderr or "")
+            st.code(logs[-12000:])
+        st.stop()
+
+    st.success("✅ Model training completed. Reloading app...")
+    st.rerun()
 
 
 def render_kpi_card(title, value, subtitle="", tone="neutral"):
@@ -80,14 +126,16 @@ st.markdown(
 # Load available combinations instantly from metadata
 @st.cache_data(show_spinner=False)
 def load_metadata():
-    with open("models/metadata.json", "r") as f:
+    with open(METADATA_PATH, "r") as f:
         return json.load(f)
+
+ensure_models_available()
 
 try:
     available_combos = load_metadata()
 except FileNotFoundError:
     available_combos = {}
-    model_files = glob.glob("models/*.pkl")
+    model_files = glob.glob(str(MODELS_DIR / "*.pkl"))
     for model_file in model_files:
         base_name = os.path.basename(model_file)
         if base_name == "all_models.pkl":
@@ -152,7 +200,7 @@ react_return_url = (
 def load_single_model(selected_crop, selected_state):
     safe_crop = selected_crop.replace('/', '_').replace('\\', '_')
     safe_state = selected_state.replace('/', '_').replace('\\', '_')
-    model_path = f"models/{safe_crop}_{safe_state}.pkl"
+    model_path = MODELS_DIR / f"{safe_crop}_{safe_state}.pkl"
     with open(model_path, 'rb') as f:
         return pickle.load(f)
 
