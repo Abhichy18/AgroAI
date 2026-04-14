@@ -6,10 +6,20 @@ import { translations } from "./data/translations";
 import AIProcessingOverlay from "./components/AIProcessingOverlay";
 
 const STREAMLIT_APP_URL = import.meta.env.VITE_STREAMLIT_APP_URL || "http://localhost:8502";
+const FRONTEND_APP_URL = import.meta.env.VITE_FRONTEND_APP_URL || window.location.origin;
+
+function normalizeOrigin(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.origin;
+  } catch {
+    return window.location.origin;
+  }
+}
 
 function buildStreamlitRedirectUrl() {
   const target = new URL(STREAMLIT_APP_URL);
-  target.searchParams.set("return_to", window.location.origin);
+  target.searchParams.set("return_to", normalizeOrigin(FRONTEND_APP_URL));
   return target.toString();
 }
 
