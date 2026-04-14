@@ -7,6 +7,12 @@ import AIProcessingOverlay from "./components/AIProcessingOverlay";
 
 const STREAMLIT_APP_URL = import.meta.env.VITE_STREAMLIT_APP_URL || "http://localhost:8502";
 
+function buildStreamlitRedirectUrl() {
+  const target = new URL(STREAMLIT_APP_URL);
+  target.searchParams.set("return_to", window.location.origin);
+  return target.toString();
+}
+
 function App() {
   const [lang, setLang] = useState("en");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -75,7 +81,7 @@ function App() {
     if (!isProcessing || processingMode !== "outbound") return;
 
     const timeout = setTimeout(() => {
-      window.location.href = STREAMLIT_APP_URL;
+      window.location.href = buildStreamlitRedirectUrl();
     }, 2800);
 
     return () => {

@@ -9,7 +9,7 @@ import json
 import glob
 import hashlib
 from pathlib import Path
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlparse
 from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 from src.predict import predict_future
@@ -36,6 +36,19 @@ def load_css():
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 load_css()
 # -----------------------------------
+
+
+def resolve_react_app_url():
+    """Prefer explicit return_to query value from frontend, else use environment default."""
+    candidate = st.query_params.get("return_to", "")
+    if candidate:
+        parsed = urlparse(candidate)
+        if parsed.scheme in {"http", "https"} and parsed.netloc:
+            return candidate.rstrip("/")
+    return REACT_APP_URL.rstrip("/")
+
+
+ACTIVE_REACT_APP_URL = resolve_react_app_url()
 
 
 @st.cache_data(show_spinner=False)
@@ -151,7 +164,7 @@ st.markdown(
             <div class="agroai-subtitle">AI Smart Selling Advisor</div>
             <div class="agroai-underline"></div>
         </div>
-        <a href="{REACT_APP_URL}/?return=1" target="_parent" style="text-decoration:none;">
+        <a href="{ACTIVE_REACT_APP_URL}/?return=1" target="_parent" style="text-decoration:none;">
             <button style="background-color:#84CC16;color:#0C100C;border:none;padding:10px 20px;border-radius:30px;font-weight:bold;cursor:pointer;box-shadow:0 0 15px rgba(132,204,22,0.4);font-family:sans-serif;">
                 &larr; Back to AgroAI
             </button>
@@ -207,7 +220,7 @@ else:
 st.session_state["last_crop"] = crop
 st.session_state["last_state"] = state
 react_return_url = (
-    f"{REACT_APP_URL}/?return=1&crop={quote_plus(crop)}&state={quote_plus(state)}"
+    f"{ACTIVE_REACT_APP_URL}/?return=1&crop={quote_plus(crop)}&state={quote_plus(state)}"
 )
 
 # LAZY LOAD ONLY REQUIRED MODEL
