@@ -156,23 +156,21 @@ def render_section_close():
     st.markdown("</section>", unsafe_allow_html=True)
 
 
-st.markdown(
-    f"""
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+header_cols = st.columns([5, 2])
+with header_cols[0]:
+    st.markdown(
+        """
         <div class="agroai-header fade-in">
             <div class="agroai-title">AgroAI Forecast Studio</div>
             <div class="agroai-subtitle">AI Smart Selling Advisor</div>
             <div class="agroai-underline"></div>
         </div>
-        <a href="{ACTIVE_REACT_APP_URL}/?return=1" target="_parent" style="text-decoration:none;">
-            <button style="background-color:#84CC16;color:#0C100C;border:none;padding:10px 20px;border-radius:30px;font-weight:bold;cursor:pointer;box-shadow:0 0 15px rgba(132,204,22,0.4);font-family:sans-serif;">
-                &larr; Back to AgroAI
-            </button>
-        </a>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+        """,
+        unsafe_allow_html=True,
+    )
+
+with header_cols[1]:
+    st.link_button("← Back to AgroAI", f"{ACTIVE_REACT_APP_URL}/?return=1", use_container_width=True)
 
 # Build crop/state controls from dataset so app opens immediately.
 available_combos = load_available_combos()
