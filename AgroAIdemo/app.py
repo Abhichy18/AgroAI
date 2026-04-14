@@ -8,12 +8,15 @@ import os
 import json
 import glob
 import hashlib
-import subprocess
-import sys
 from pathlib import Path
 from urllib.parse import quote_plus
+from sklearn.metrics import r2_score, mean_absolute_error, mean_squared_error
 
 from src.predict import predict_future
+from src.data_preprocessing import load_and_clean_data
+from src.feature_engineering import create_features
+from src.train_model import train_model
+from src.config import DATASET_PATH
 
 st.set_page_config(layout="wide", page_title="🌾 AgroAI Smart Selling Advisor")
 
@@ -24,8 +27,6 @@ DANGER = "#EF4444"
 REACT_APP_URL = os.getenv("REACT_APP_URL", "http://localhost:5173")
 BASE_DIR = Path(__file__).resolve().parent
 MODELS_DIR = BASE_DIR / "models"
-METADATA_PATH = MODELS_DIR / "metadata.json"
-AUTO_TRAIN_IF_MISSING = os.getenv("AUTO_TRAIN_IF_MISSING", "1") == "1"
 
 # --- PRO-LEVEL UI CSS INJECTION ---
 def load_css():
@@ -37,43 +38,80 @@ load_css()
 # -----------------------------------
 
 
-def ensure_models_available():
-    has_metadata = METADATA_PATH.exists()
-    has_model_files = any(MODELS_DIR.glob("*.pkl"))
-    if has_metadata or has_model_files:
-        return
+@st.cache_data(show_spinner=False)
+def load_available_combos():
+    try:
+        # Fast path: read only columns needed for control dropdowns.
+        raw = pd.read_csv(DATASET_PATH, usecols=["Commodity", "State"])
+        raw = raw.dropna(subset=["Commodity", "State"]).copy()
+        raw["Commodity"] = raw["Commodity"].astype(str).str.strip()
+        raw["State"] = raw["State"].astype(str).str.strip()
 
-    if not AUTO_TRAIN_IF_MISSING:
-        st.error("❌ No model metadata or model files found on server.")
-        st.info("Set AUTO_TRAIN_IF_MISSING=1 or generate models in AgroAIdemo/models/ before deployment.")
-        st.stop()
+        combos = {}
+        for crop, group in raw.groupby("Commodity"):
+            states = sorted([s for s in group["State"].unique().tolist() if s])
+            if states:
+                combos[crop] = states
+        return combos
+    except Exception:
+        # Safe fallback with existing preprocessing pipeline.
+        df = load_and_clean_data(DATASET_PATH)
+        combos = {}
+        for crop, group in df.groupby("crop"):
+            states = sorted(group["state"].dropna().astype(str).str.strip().unique().tolist())
+            if states:
+                combos[crop] = states
+        return combos
 
-    if st.session_state.get("auto_train_failed", False):
-        st.error("❌ Model auto-training failed on a previous attempt.")
-        if st.button("Retry Model Training"):
-            st.session_state["auto_train_failed"] = False
-            st.rerun()
-        st.stop()
+
+@st.cache_data(show_spinner=False)
+def load_training_df():
+    return load_and_clean_data(DATASET_PATH)
+
+
+def train_and_save_model(selected_crop, selected_state):
+    df = load_training_df()
+    df_crop = df[(df["crop"] == selected_crop) & (df["state"] == selected_state)].copy()
+
+    if len(df_crop) < 20:
+        raise ValueError(f"Not enough data points for {selected_crop} in {selected_state}.")
+
+    df_feat_local = create_features(df_crop)
+    if len(df_feat_local) < 20:
+        raise ValueError(f"Not enough feature rows after engineering for {selected_crop} in {selected_state}.")
+
+    feature_cols = ["day", "month", "day_of_week", "lag1", "lag2", "lag3", "roll3", "roll7"]
+    X = df_feat_local[feature_cols]
+    y = df_feat_local["price"]
+
+    split = int(len(df_feat_local) * 0.8)
+    X_train, X_test = X[:split], X[split:]
+    y_train, y_test = y[:split], y[split:]
+
+    model_local = train_model(X_train, y_train)
+    y_pred_train = model_local.predict(X_train)
+    y_pred_test = model_local.predict(X_test)
+
+    model_data_local = {
+        "model": model_local,
+        "df_feat": df_feat_local,
+        "r2_train": r2_score(y_train, y_pred_train),
+        "r2_test": r2_score(y_test, y_pred_test),
+        "mae_test": mean_absolute_error(y_test, y_pred_test),
+        "rmse_test": np.sqrt(mean_squared_error(y_test, y_pred_test)),
+        "total_points": len(df_feat_local),
+        "features": feature_cols,
+    }
 
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    with st.spinner("No models found. Running one-time training on server (this can take several minutes)..."):
-        result = subprocess.run(
-            [sys.executable, str(BASE_DIR / "offline_train.py")],
-            cwd=str(BASE_DIR),
-            capture_output=True,
-            text=True,
-        )
+    safe_crop = selected_crop.replace('/', '_').replace('\\', '_')
+    safe_state = selected_state.replace('/', '_').replace('\\', '_')
+    model_path = MODELS_DIR / f"{safe_crop}_{safe_state}.pkl"
 
-    if result.returncode != 0:
-        st.session_state["auto_train_failed"] = True
-        st.error("❌ Auto-training failed. Check logs below.")
-        with st.expander("Training logs"):
-            logs = (result.stdout or "") + "\n" + (result.stderr or "")
-            st.code(logs[-12000:])
-        st.stop()
+    with open(model_path, "wb") as f:
+        pickle.dump(model_data_local, f)
 
-    st.success("✅ Model training completed. Reloading app...")
-    st.rerun()
+    return model_data_local
 
 
 def render_kpi_card(title, value, subtitle="", tone="neutral"):
@@ -123,39 +161,11 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# Load available combinations instantly from metadata
-@st.cache_data(show_spinner=False)
-def load_metadata():
-    with open(METADATA_PATH, "r") as f:
-        return json.load(f)
-
-ensure_models_available()
-
-try:
-    available_combos = load_metadata()
-except (FileNotFoundError, json.JSONDecodeError):
-    available_combos = {}
-    model_files = glob.glob(str(MODELS_DIR / "*.pkl"))
-    for model_file in model_files:
-        base_name = os.path.basename(model_file)
-        if base_name == "all_models.pkl":
-            continue
-        name = base_name.replace(".pkl", "")
-        if "_" not in name:
-            continue
-        crop_name, state_name = name.rsplit("_", 1)
-        if crop_name not in available_combos:
-            available_combos[crop_name] = []
-        available_combos[crop_name].append(state_name)
-    if not available_combos:
-        st.error("❌ No model metadata or per-combo models found. Please run `python offline_train.py` first.")
-        st.stop()
-
-    # Persist rebuilt metadata so subsequent runs stay fast and quiet.
-    normalized = {crop: sorted(list(set(states))) for crop, states in available_combos.items()}
-    with open(METADATA_PATH, "w") as jf:
-        json.dump(normalized, jf)
-    available_combos = normalized
+# Build crop/state controls from dataset so app opens immediately.
+available_combos = load_available_combos()
+if not available_combos:
+    st.error("❌ Could not load crop/state combinations from dataset.")
+    st.stop()
 
 # Mobile-first mode toggle logic (can be overridden with ?mobile=0 or ?mobile=1)
 query_mobile = st.query_params.get("mobile", None)
@@ -229,8 +239,26 @@ try:
             unsafe_allow_html=True,
         )
 except FileNotFoundError:
-    st.error(f"❌ No trained model found for {crop} in {state}. Please retrain.")
-    st.stop()
+    start_train = time.time()
+    with st.spinner(f"Training model for {crop} in {state} (first request only)..."):
+        try:
+            model_data = train_and_save_model(crop, state)
+            load_single_model.clear()
+        except Exception as e:
+            st.error(f"❌ Could not train model for {crop} in {state}: {str(e)}")
+            st.stop()
+
+    train_elapsed = time.time() - start_train
+    if is_mobile:
+        st.markdown(
+            f"<div class='mobile-status mobile-status-good'>⚡ Trained in {train_elapsed:.2f}s</div>",
+            unsafe_allow_html=True,
+        )
+    else:
+        st.sidebar.markdown(
+            f"<div class='sidebar-chip sidebar-chip-good'>⚡ Trained in {train_elapsed:.2f}s</div>",
+            unsafe_allow_html=True,
+        )
 
 model = model_data['model']
 df_feat = model_data['df_feat']
