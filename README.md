@@ -78,7 +78,7 @@ The heavy analytical lifting of AgroAI is powered by an industrialized Python-St
 
 This repo is configured to keep **code + required dataset** in Git, while excluding generated heavy model artifacts.
 
-- ✅ Included in Git: app code, frontend code, configs, and training dataset
+- ✅ Included in Git: app code, frontend code, configs, and training dataset (via Git LFS)
 - ❌ Excluded from Git: generated `AgroAIdemo/models/*.pkl` files
 
 Why: model `.pkl` files can easily exceed GitHub file limits and make the repository too heavy.
@@ -92,6 +92,8 @@ Why: model `.pkl` files can easily exceed GitHub file limits and make the reposi
 ```bash
 git clone <your-repo-url>
 cd DTU_HACK
+git lfs install
+git lfs pull
 ```
 
 ### 2. Run frontend (React)
