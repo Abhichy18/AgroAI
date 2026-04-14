@@ -133,7 +133,7 @@ ensure_models_available()
 
 try:
     available_combos = load_metadata()
-except FileNotFoundError:
+except (FileNotFoundError, json.JSONDecodeError):
     available_combos = {}
     model_files = glob.glob(str(MODELS_DIR / "*.pkl"))
     for model_file in model_files:
@@ -150,7 +150,12 @@ except FileNotFoundError:
     if not available_combos:
         st.error("❌ No model metadata or per-combo models found. Please run `python offline_train.py` first.")
         st.stop()
-    st.warning("⚠️ metadata.json not found. Using model files to build crop/state list.")
+
+    # Persist rebuilt metadata so subsequent runs stay fast and quiet.
+    normalized = {crop: sorted(list(set(states))) for crop, states in available_combos.items()}
+    with open(METADATA_PATH, "w") as jf:
+        json.dump(normalized, jf)
+    available_combos = normalized
 
 # Mobile-first mode toggle logic (can be overridden with ?mobile=0 or ?mobile=1)
 query_mobile = st.query_params.get("mobile", None)
