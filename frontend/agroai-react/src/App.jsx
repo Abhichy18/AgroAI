@@ -5,6 +5,8 @@ import BentoGrid from "./components/Features/BentoGrid";
 import { translations } from "./data/translations";
 import AIProcessingOverlay from "./components/AIProcessingOverlay";
 
+const STREAMLIT_APP_URL = import.meta.env.VITE_STREAMLIT_APP_URL || "http://localhost:8502";
+
 function App() {
   const [lang, setLang] = useState("en");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -73,7 +75,7 @@ function App() {
     if (!isProcessing || processingMode !== "outbound") return;
 
     const timeout = setTimeout(() => {
-      window.location.href = "http://localhost:8502";
+      window.location.href = STREAMLIT_APP_URL;
     }, 2800);
 
     return () => {

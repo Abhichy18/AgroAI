@@ -71,3 +71,121 @@ The heavy analytical lifting of AgroAI is powered by an industrialized Python-St
   <b>Crafted with ❤️ for the DTU Hackathon</b><br>
   <i>Bringing Data-Driven Agriculture to the Masses</i>
 </div>
+
+---
+
+## 🧩 Repository Setup (GitHub-Friendly)
+
+This repo is configured to keep **code + required dataset** in Git, while excluding generated heavy model artifacts.
+
+- ✅ Included in Git: app code, frontend code, configs, and training dataset
+- ❌ Excluded from Git: generated `AgroAIdemo/models/*.pkl` files
+
+Why: model `.pkl` files can easily exceed GitHub file limits and make the repository too heavy.
+
+---
+
+## ⚡ Quick Start After Clone
+
+### 1. Clone and enter project
+
+```bash
+git clone <your-repo-url>
+cd DTU_HACK
+```
+
+### 2. Run frontend (React)
+
+```bash
+cd frontend/agroai-react
+npm install
+npm run dev
+```
+
+### 3. Run backend (Streamlit)
+
+Open a new terminal:
+
+```bash
+cd AgroAIdemo
+python -m venv .venv
+# Windows
+.venv\Scripts\activate
+# macOS/Linux
+source .venv/bin/activate
+
+pip install -r requirements.txt
+python offline_train.py
+streamlit run app.py
+```
+
+The first training run generates local files inside `AgroAIdemo/models/`.
+
+---
+
+## 🚀 Recommended Push Workflow
+
+Use this flow to publish without pushing large model binaries:
+
+```bash
+git add .
+git commit -m "Initial public version (code + dataset, models ignored)"
+git remote add origin <your-github-repo-url>
+git branch -M main
+git push -u origin main
+```
+
+If you accidentally add models, unstage them before commit:
+
+```bash
+git restore --staged AgroAIdemo/models
+```
+
+---
+
+## 🌍 Production Deployment (Vercel + Streamlit)
+
+Yes, your flow works in production:
+- User opens React app on Vercel
+- Clicks Predict and is redirected to Streamlit app
+- User selects crop/state in Streamlit
+- Back button returns to React with selected crop/state in URL params
+
+### 1. Deploy frontend to Vercel
+
+In Vercel:
+- Import this GitHub repository
+- Set project root to `frontend/agroai-react`
+- Framework preset: `Vite`
+- Build command: `npm run build`
+- Output directory: `dist`
+
+Add environment variable in Vercel project settings:
+- `VITE_STREAMLIT_APP_URL=https://<your-streamlit-domain>`
+
+### 2. Deploy backend (Streamlit)
+
+Deploy `AgroAIdemo` on Streamlit Community Cloud (or Render/Railway).
+
+If using Streamlit Community Cloud:
+- Repository: this repo
+- Main file path: `AgroAIdemo/app.py`
+- Python dependencies: `AgroAIdemo/requirements.txt`
+
+Add environment variable for return navigation:
+- `REACT_APP_URL=https://<your-vercel-domain>`
+
+### 3. Important notes
+
+- Do not push `AgroAIdemo/models/*.pkl` to GitHub.
+- First Streamlit run may require training models if models are not prebuilt:
+  - `python offline_train.py`
+- For stable production startup, you can pre-generate models on the server disk or add a startup script that trains once if missing.
+
+### 4. Validate after deploy
+
+1. Open Vercel URL.
+2. Click Predict.
+3. Confirm redirect to Streamlit URL.
+4. Change crop/state and click Back to AgroAI.
+5. Confirm React re-opens and receives `crop` and `state` params.

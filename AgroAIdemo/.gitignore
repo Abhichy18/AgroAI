@@ -1,0 +1,30 @@
+# Data and models (too large for GitHub)
+data/
+models/
+*.pkl
+*.csv
+!agmarknet-india-commodity-prices-2024-2025/agmarknet_india_historical_prices_2024_2025.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/

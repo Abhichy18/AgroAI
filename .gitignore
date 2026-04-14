@@ -13,7 +13,6 @@ build/
 # Extremely Large Files (Avoid GitHub 100MB limit and 1GB repo limit)
 AgroAIdemo/models/*.pkl
 AgroAIdemo/data/*.csv
-AgroAIdemo/agmarknet-india-commodity-prices-2024-2025/*.csv
 
 # Environment variables
 .env
