@@ -518,4 +518,12 @@ div[data-testid="stAlert"] {
     .section-title {
         font-size: 1.1rem;
     }
+
+    /* Some mobile browsers apply aggressive text color adjustments; force readable heading tones. */
+    .agroai-subtitle,
+    .section-title {
+        color: #e9f7ea !important;
+        -webkit-text-fill-color: #e9f7ea !important;
+        text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+    }
 }
