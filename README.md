@@ -14,6 +14,10 @@
 
 ### 🌟 [Live Application: agroai-market.vercel.app](https://agroai-market.vercel.app/) 🌟
 
+<br>
+<img src="./assets/hero.png" width="100%" alt="AgroAI Hero Interface" />
+<br>
+
 [**The Problem**](#-the-problem) • [**Our Solution**](#-our-solution) • [**Tech Stack**](#-tech-stack) • [**Features**](#-key-features) • [**Architecture**](#-architecture) • [**Setup**](#-quick-start-guide)
 
 </div>
