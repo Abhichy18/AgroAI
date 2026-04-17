@@ -1,18 +1,20 @@
 <div align="center">
 
-# <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals/Sheaf%20of%20Rice.png" alt="Rice" width="45" /> AgroAI - The Smart Selling Advisor
+# 🌾 AgroAI - The Smart Selling Advisor
 
 <p align="center">
-  <b>Empowering Farmers with Next-Gen AI-Driven Market Insights & Profit Maximization</b>
+  <b>From <i>मेहनत</i> to Profit: AI-Powered Market Intelligence for Farmers</b>
 </p>
 
-[![Frontend](https://img.shields.io/badge/React%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
+[![Frontend](https://img.shields.io/badge/React%20%2B%20Vite-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Backend](https://img.shields.io/badge/Streamlit-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://streamlit.io/)
-[![Machine Learning](https://img.shields.io/badge/Scikit_Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
-[![Python](https://img.shields.io/badge/Python_3.9-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
+[![Machine Learning](https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white)](https://scikit-learn.org/)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org/)
 [![Status](https://img.shields.io/badge/Status-Live-00C853?style=for-the-badge)]()
 
-[**The Problem**](#-the-problem) • [**Our Solution**](#-our-solution) • [**Key Features**](#-key-features) • [**Streamlit Engine**](#%EF%B8%8F-streamlit-ai-engine) • [**WhatsApp Bot**](#-whatsapp-bot-integration)
+### 🌟 [Live Application: agroai-market.vercel.app](https://agroai-market.vercel.app/) 🌟
+
+[**The Problem**](#-the-problem) • [**Our Solution**](#-our-solution) • [**Tech Stack**](#-tech-stack) • [**Features**](#-key-features) • [**Architecture**](#-architecture) • [**Setup**](#-quick-start-guide)
 
 </div>
 
@@ -20,74 +22,90 @@
 
 ## 🚨 The Problem
 
-Every year, farmers face tremendous financial uncertainty. They plant crops without knowing what the market price will be at harvest time. **Lack of predictive insights** forces them to sell blindly, often in local markets saturated with the same crop, leading to devastating price crashes and significant losses.
-- **No Market Foresight:** Selling decisions are based on luck or outdated trends.
-- **Language Barriers:** Existing analytical tech solutions are primarily in English, alienating the actual users.
-- **Low Accessibility:** Many farmers do not own high-end smartphones or stable internet connections to run heavy web dashboards.
+Farmers face severe price uncertainty when deciding to sell their harvest. Because 86% of farmers operate on small margins, even minor price drops can be devastating. Uninformed selling drives distress sales, especially when local markets are flooded post-harvest. Farmers fundamentally lack predictive tools telling them **when** and **where** to sell for maximum profit in an accessible language.
 
 ---
 
 ## 💡 Our Solution
 
-**AgroAI** is built to bridge the gap between advanced Machine Learning and the grassroots agricultural community. We shift the paradigm from *“growing and hoping”* to **“predicting and profiting”**.
-    
-By analyzing massive datasets of historical **Agmarknet commodity prices (2024-2025)**, our AI acts as a smart advisor:
-1. **Predicts** future prices up to 6 months in advance.
-2. **Recommends** the exact state and month to sell for maximum margins.
-3. **Delivers** these insights via a blazing-fast Multilingual React Dashboard AND an upcoming/integrated scalable WhatsApp Bot, ensuring zero friction for the end-user.
+**AgroAI** is an AI Smart Selling Advisor predicting short-term mandi prices to offer direct, actionable signals. We provide:
+- **Price Forecasting:** Predicts upcoming crop prices.
+- **Actionable AI:** Clear **SELL**, **HOLD**, or **WAIT** recommendations.
+- **Profit Optimization:** Compares local mandis to find the best realized rates.
+- **Inclusivity:** Bilingual interface designed for grassroots users.
+
+---
+
+## 🧰 Tech Stack
+
+Our stack is distributed across a robust Python analytical engine and an accessible modern frontend, integrated via intelligent GenAI wrappers.
+
+- ![React + Vite](https://img.shields.io/badge/React%20%2B%20Vite-61DAFB?style=flat&logo=react&logoColor=black) **Frontend:** Multilingual, lightweight user interface deployed for real-time visualization.
+- ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white) ![Scikit-Learn](https://img.shields.io/badge/Scikit--Learn-F7931E?style=flat&logo=scikit-learn&logoColor=white) **Backend & ML Engine:** Handles the Random Forest regression models, interactive data plotting, and price calculation logic. 
+- ![LLMs](https://img.shields.io/badge/GenAI-LLMs%20%2F%20OpenRouter-0EA5E9?style=flat&logo=robot&logoColor=white) **GenAI Layer:** Powers the core advisory flows to present complex insights conversationally and natively.
+- ![Telegram](https://img.shields.io/badge/Telegram%20Bot-26A5E4?style=flat&logo=telegram&logoColor=white) ![n8n](https://img.shields.io/badge/n8n%20Automation-EA4B71?style=flat&logo=n8n&logoColor=white) **Automation:** A low-friction Telegram bot over 2G/3G allowing farmers to get instant insights without an app install, driven by n8n workflow routing.
 
 ---
 
 ## 🚀 Key Features
 
-### 🌐 Multilingual Support (Built for Farmers)
-Technology is useless if the end-user cannot read it. AgroAI's frontend is fully i18n-ready, featuring **dynamic toggling between native languages** (Hindi, English, etc.) via custom translation dictionaries. Farmers can interact with price trends entirely in their mother tongue.
-
-### 💬 WhatsApp Bot Integration
-To tackle the smartphone and internet barrier directly, AgroAI connects the ML backend with **WhatsApp**:
-- **Zero Learning Curve:** Farmers just text *"Bajra in UP"* and the bot instantly replies with future price predictions and best-selling advice.
-- **Universal Accessibility:** Works on low-end devices and even with poor 2G/3G network connections.
-
-### 💻 Modern React Dashboard
-- **Bento-Grid UI:** Fluid and intuitive visual layout adapting perfectly to Mobiles, Tablets, and Desktop screens.
-- **Smart Prediction Cards:** Bite-sized actionable insights (Commodity metrics, optimal selling dates).
-- **Real-time Analytics Overlay:** Simulated loading overlays offering beautiful visual feedback during large data fetches.
+* **Real-Time Forecasting:** Combines historical Agmarknet data and recent trends for a 7-day crop-state forecast.
+* **Intelligent Recommendations:** Direct SELL/HOLD/WAIT logic to remove the guesswork.
+* **Profit Arbitrage:** Distance-aware market comparisons estimating your actual extra ₹ per kg.
+* **Multilingual Access:** Bilingual user flow bridging the digital literacy gap for farmers.
+* **WhatsApp & Telegram Bots:** Enables low-friction accessibility on 2G/3G connections without heavy apps.
 
 ---
 
-## ⚙️ Streamlit AI Engine & Backend
+## ⚙️ Architecture
 
-The heavy analytical lifting of AgroAI is powered by an industrialized Python-Streamlit architecture.
+```mermaid
+flowchart TD
+    A[Agmarknet and Historical Data] --> B[Preprocessing]
+    B --> C[Feature Engineering]
+    C --> D[RandomForest Models per Crop-State]
+    D --> E[Model Storage pkl + metadata]
+    E --> F[Prediction Engine 7-day forecast]
+    F --> G[Decision Logic SELL HOLD WAIT]
+    G --> H[Arbitrage + Risk + Revenue Modules]
+    H --> I[Streamlit Backend :8501]
+    H --> J[React Frontend :5173]
+    J --> K[Farmer Decision Support]
+```
 
-- 🧠 **Intelligent State-wise Modeling:** Trains individual Random Forest Regressor models *per commodity, per state*, minimizing regional outliers and maximizing localized accuracy.
-- 📈 **Dynamic Visualizations:** Generates rich, interactive graphs via `Plotly.express` comparing historical prices against 6-month projected data across regions.
-- 💹 **Profit Maximizer Module:** Cross-calculates predicted values across different markets to suggest the absolute highest profitable "State + Month" combination.
-- ⚡ **Extensive Caching & Checksums:** Employs `.pkl` model caching and `hashlib` state-checking to prevent redundant training, accelerating inference speed by over 95%.
+Technical highlights:
 
----
-
-<div align="center">
-  <br>
-  <b>Crafted with ❤️ for the DTU Hackathon</b><br>
-  <i>Bringing Data-Driven Agriculture to the Masses</i>
-</div>
-
----
-
-## 🧩 Repository Setup (GitHub-Friendly)
-
-This repo is configured to keep **code + required dataset** in Git, while excluding generated heavy model artifacts.
-
-- ✅ Included in Git: app code, frontend code, configs, and training dataset (via Git LFS)
-- ❌ Excluded from Git: generated `AgroAIdemo/models/*.pkl` files
-
-Why: model `.pkl` files can easily exceed GitHub file limits and make the repository too heavy.
+- Per-combination model loading from pkl artifacts.
+- Metadata-based crop-state discovery.
+- Cached inference workflow for speed.
+- Interactive Plotly visual analytics.
 
 ---
 
-## ⚡ Quick Start After Clone
+## 📁 Project Structure
 
-### 1. Clone and enter project
+```text
+VIHAAN_DTU/
+|-- app.py
+|-- offline_train.py
+|-- check_accuracy.py
+|-- verify_cache.py
+|-- requirements.txt
+|-- assets/
+|-- src/
+|-- models/
+|-- agmarknet-india-commodity-prices-2024-2025/
+`-- Agrow-Ai/
+    |-- AgroAIdemo/
+    `-- frontend/
+        `-- agroai-react/
+```
+
+---
+
+## ⚡ Quick Start Guide
+
+### 1. Clone & Setup Repository
 
 ```bash
 git clone <your-repo-url>
@@ -96,98 +114,39 @@ git lfs install
 git lfs pull
 ```
 
-### 2. Run frontend (React)
+### 2. Run the React Frontend
 
 ```bash
 cd frontend/agroai-react
 npm install
 npm run dev
+# The frontend will be available at http://localhost:5173
 ```
 
-### 3. Run backend (Streamlit)
+### 3. Run the Streamlit Backend
 
-Open a new terminal:
+Open a new terminal session in the project root:
 
 ```bash
 cd AgroAIdemo
 python -m venv .venv
-# Windows
+
+# Activate Virtual Environment (Windows)
 .venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
+# Activate Virtual Environment (macOS/Linux)
+# source .venv/bin/activate
 
 pip install -r requirements.txt
 python offline_train.py
 streamlit run app.py
+# The backend will be available at http://localhost:8501
 ```
 
-The first training run generates local files inside `AgroAIdemo/models/`.
+> **Note:** The `offline_train.py` script automatically generates local model `.pkl` files inside `AgroAIdemo/models/` using the dataset. Ensure these files are not committed to your repository.
 
 ---
 
-## 🚀 Recommended Push Workflow
-
-Use this flow to publish without pushing large model binaries:
-
-```bash
-git add .
-git commit -m "Initial public version (code + dataset, models ignored)"
-git remote add origin <your-github-repo-url>
-git branch -M main
-git push -u origin main
-```
-
-If you accidentally add models, unstage them before commit:
-
-```bash
-git restore --staged AgroAIdemo/models
-```
-
----
-
-## 🌍 Production Deployment (Vercel + Streamlit)
-
-Yes, your flow works in production:
-- User opens React app on Vercel
-- Clicks Predict and is redirected to Streamlit app
-- User selects crop/state in Streamlit
-- Back button returns to React with selected crop/state in URL params
-
-### 1. Deploy frontend to Vercel
-
-In Vercel:
-- Import this GitHub repository
-- Set project root to `frontend/agroai-react`
-- Framework preset: `Vite`
-- Build command: `npm run build`
-- Output directory: `dist`
-
-Add environment variable in Vercel project settings:
-- `VITE_STREAMLIT_APP_URL=https://<your-streamlit-domain>`
-
-### 2. Deploy backend (Streamlit)
-
-Deploy `AgroAIdemo` on Streamlit Community Cloud (or Render/Railway).
-
-If using Streamlit Community Cloud:
-- Repository: this repo
-- Main file path: `AgroAIdemo/app.py`
-- Python dependencies: `AgroAIdemo/requirements.txt`
-
-Add environment variable for return navigation:
-- `REACT_APP_URL=https://<your-vercel-domain>`
-
-### 3. Important notes
-
-- Do not push `AgroAIdemo/models/*.pkl` to GitHub.
-- First Streamlit run may require training models if models are not prebuilt:
-  - `python offline_train.py`
-- For stable production startup, you can pre-generate models on the server disk or add a startup script that trains once if missing.
-
-### 4. Validate after deploy
-
-1. Open Vercel URL.
-2. Click Predict.
-3. Confirm redirect to Streamlit URL.
-4. Change crop/state and click Back to AgroAI.
-5. Confirm React re-opens and receives `crop` and `state` params.
+<div align="center">
+  <b>Crafted with ❤️</b><br>
+  <i>Data-Driven Agriculture. Inclusive by Design.</i>
+</div>
