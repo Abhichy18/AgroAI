@@ -12,4 +12,4 @@ jobs:
     steps:
       - name: Ping Streamlit Dashboard
         # Sends a simple GET request to your Streamlit app url
-        run: curl -sL https://agroai-dashboard.streamlit.app > /dev/null
+        run: curl -s https://agroai-dashboard.streamlit.app > /dev/null || true
